@@ -15,8 +15,8 @@ var eventCategoryRouter = require("./modules/EventCategory/event-category.router
 var app = express();
 const server = http.createServer(app);
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+// app.set("views", path.join(__dirname, "views"));
+// app.set("view engine", "jade");
 
 app.use(cors());
 app.use(express.json({limit: '50mb'}));
