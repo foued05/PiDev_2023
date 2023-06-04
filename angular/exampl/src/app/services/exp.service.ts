@@ -12,11 +12,11 @@ export class ExpService {
   private socket: any;
 
   constructor(private http: HttpClient) { 
-    this.socket = io('http://localhost:3000');
+    this.socket = io('http://localhost:3080');
   }
 
   getData():Observable<any>{
-    return this.http.get<any>('http://localhost:3000/api/data')
+    return this.http.get<any>('http://localhost:3080/')
   }
 
   sendMessage(message: string): void {

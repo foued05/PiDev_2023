@@ -9,6 +9,8 @@ import { ExpService } from './services/exp.service';
 export class AppComponent implements OnInit {
   title = 'exampl';
 
+  responses: string[] = [];
+
   constructor(private expService: ExpService){}
   ngOnInit(): void {
     
@@ -25,6 +27,7 @@ export class AppComponent implements OnInit {
 
     this.expService.getResponse().subscribe(
       (response) => {
+        this.responses.push(response);
         console.log('Server response:', response);
       },
       (error) => {
