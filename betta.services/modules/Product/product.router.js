@@ -9,31 +9,31 @@ const {
   deleteData,
   searchData,
   restoreData,
-} = require("./event-category.service");
-const { addDto, updateDto } = require("./event-category.dto");
+} = require("./product.service");
+const { addDto, updateDto } = require("./product.dto");
 
-// list event categories
+// list product
 router.get("/list", listData);
 
-// get event category by _id
+// get product by _id
 router.get("/:id", getData);
 
-// get event category by name
+// get product by name
 router.get("/name/:name", getDataByName);
 
-//search event category
+//search product
 router.post("/search", searchData);
 
-// create event category
+// create product
 router.post("/add", addDto, addData);
 
-// update event category
+// update product
 router.post("/update/:id", updateDto, updateData);
 
-// delete event category
+// delete product
 router.post("/delete/:id", deleteData);
 
-// restore event category
+// restore product
 router.post("/restore/:id", restoreData);
 
 module.exports = router;

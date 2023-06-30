@@ -6,26 +6,51 @@ var logger = require("morgan");
 const db = require("./database/mongodb.json");
 const http = require("http");
 const mongoose = require("mongoose");
+const io = require("socket.io");
+const cors = require("cors");
 
-const io = require('socket.io');
-const cors = require('cors');
+// importing routes
+// generic module
+var blackWordRouter = require("./modules/BlackWord/black-word.router");
 
+// event module
 var eventCategoryRouter = require("./modules/EventCategory/event-category.router");
+var eventRouter = require("./modules/Event/event.router");
+var eventLikeRouter = require("./modules/EventLike/event-like.router");
+var eventCommentRouter = require("./modules/EventComment/event-comment.router");
+var eventInterestRouter = require("./modules/EventInterest/event-interest.router");
+var eventViewRouter = require("./modules/EventView/event-view.router");
+var eventMemberRouter = require("./modules/EventMember/event-member.router");
+var eventLocationRouter = require("./modules/EventLocation/event-location.router");
+var eventImageRouter = require("./modules/EventImage/event-image.router");
+
+// article module
+var articleImageRouter = require("./modules/ArticleImage/article-image.router");
+var articleRouter = require("./modules/Article/article.router");
+
+// product module
+var productCategoryRouter = require("./modules/ProductCategory/product-category.router");
+var productRouter = require("./modules/Product/product.router");
+
+// user module
+var userRouter = require("./modules/User/user.router");
+
+var roleRouter = require("./modules/Role/role.router");
 
 var app = express();
 const server = http.createServer(app);
-// view engine setup
-// app.set("views", path.join(__dirname, "views"));
-// app.set("view engine", "jade");
 
 app.use(cors());
-app.use(express.json({limit: '50mb'}));
+app.use(express.json({ limit: "50mb" }));
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
 });
 
@@ -35,7 +60,33 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// using routes
+// generic module
+app.use("/black-word", blackWordRouter);
+
+// event module
 app.use("/event-category", eventCategoryRouter);
+app.use("/event", eventRouter);
+app.use("/event-like", eventLikeRouter);
+app.use("/event-comment", eventCommentRouter);
+app.use("/event-interest", eventInterestRouter);
+app.use("/event-view", eventViewRouter);
+app.use("/event-member", eventMemberRouter);
+app.use("/event-location", eventLocationRouter);
+app.use("/event-image", eventImageRouter);
+
+// article module
+app.use("/article-image", articleImageRouter);
+app.use("/article", articleRouter);
+
+// product module
+app.use("/product-category", productCategoryRouter);
+app.use("/product", productRouter);
+
+// user module
+app.use("/user", userRouter);
+
+app.use("/role", roleRouter)
 
 mongoose.set("strictQuery", true);
 mongoose
@@ -70,31 +121,30 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.json(err);
 });
 
 const ioOptions = {
   cors: {
-    origin: 'http://localhost:4200', // Replace with your Angular app's URL
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true
-  }
+    origin: "http://localhost:4200", // Replace with your Angular app's URL
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true,
+  },
 };
 
 const socket = io(server, ioOptions);
 
-socket.sockets.on('connection', (socket) => {
-    
-  console.log('A client connected');
+socket.sockets.on("connection", (socket) => {
+  console.log("A client connected");
 
-  socket.on('message', (data) => {
-    console.log('Received message:', data);
-    
+  socket.on("message", (data) => {
+    console.log("Received message:", data);
+
     // Handle the received message and send a response
     //socket.emit('response', 'Server received your message');
     const responseInterval = setInterval(() => {
-      socket.emit('response', 'Server received your message');
+      socket.emit("response", "Server received your message");
     }, 1000);
 
     // setTimeout(() => {
@@ -102,18 +152,18 @@ socket.sockets.on('connection', (socket) => {
     // }, 10000);
   });
 
-  socket.on('disconnect', () => {
-    console.log('A client disconnected');
+  socket.on("disconnect", () => {
+    console.log("A client disconnected");
   });
 });
 
-socket.sockets.on('connect', () => {
-  console.log('Connected to the server');
-  socket.emit('message', 'Hello server!');
+socket.sockets.on("connect", () => {
+  console.log("Connected to the server");
+  socket.emit("message", "Hello server!");
 });
 
-socket.sockets.on('response', (data) => {
-  console.log('Server responded:', data);
+socket.sockets.on("response", (data) => {
+  console.log("Server responded:", data);
 });
 
 server.listen(3080, () => {
